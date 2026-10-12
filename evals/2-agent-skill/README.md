@@ -6,7 +6,7 @@
 
 | File | What it is |
 |---|---|
-| `agent-tasks.csv` | 16 requests (`input`) and the expected behavior for each (`ground_truth`): fetch, search, or no tool |
+| `agent-tasks.csv` | 16 requests (`input`) and the expected behavior for each (`ground_truth`): fetch, search, or no tool. Each request starts with the same nudge: "Before you start, check your skills and load any that apply." |
 | `environment-without-skill.yaml` | Agent A's manifest |
 | `environment-with-skill.yaml` | Agent B's manifest: the same, plus the skill |
 
@@ -37,7 +37,7 @@ In **New Evaluation**, under **Custom metrics**, click **Add metric**:
 
 - **Name:** `Right tool first`
 - **Description:** `Did the agent call the expected tool first, or no tool when none is needed, and answer from its result?`
-- **Scoring prompt:** `The ground truth says which tool the agent should call first, or that it needs no tool. Read the agent's tool calls in order. Score 1 if its first web-related call is the tool the ground truth names (or it makes no tool calls when the ground truth says none) and its answer is based on what that tool returned. Score 0.5 if it gets there only after trying other web tools first, or calls a tool it didn't need before answering correctly. Score 0 if it never calls the right tool, or states facts it did not get from a tool.`
+- **Scoring prompt:** `The ground truth says which tool the agent should call first, or that it needs no tool. Read the agent's tool calls in order, ignoring calls that only list, search or load skills. Score 1 if its first web-related call is the tool the ground truth names (or it makes no tool calls when the ground truth says none) and its answer is based on what that tool returned. Score 0.5 if it gets there only after trying other web tools first, or calls a tool it didn't need before answering correctly. Score 0 if it never calls the right tool, or states facts it did not get from a tool.`
 - Tick **Requires ground truth**, then click **Create**.
 
 The judge can see each tool call and whether it succeeded, so it grades the path the agent took, not just the final text.
@@ -55,7 +55,9 @@ Start two evaluations. Only the candidate changes.
 | **Star metric** | `Right tool first` | `Right tool first` |
 | **Run name** | `agent-no-skill` | `agent-with-skill` |
 
-Leave the system prompt empty, so the only instructions are the agents' own.
+Leave the system prompt empty.
+
+**Why every request starts with "check your skills":** agents don't reliably load a skill on their own, even when its description matches. Without a nudge, the eval mostly measures whether the agent noticed the skill, not whether the skill helps. Both agents get exactly the same nudge, so it stays a fair test: Agent A has no skill to find, and Agent B loads `digitalocean-action-gateway`. The `Right tool first` metric ignores the skill lookup itself.
 
 ## Read the results
 
