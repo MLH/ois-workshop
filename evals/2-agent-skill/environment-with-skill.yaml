@@ -1,12 +1,13 @@
 # Agent B: with the digitalocean-action-gateway skill
 # Build it with the Create Environment form, then check its manifest matches this one.
 # Both agents must be identical except for the skills block.
+name: agent-with-skill
 agent: hermes
 size: mars-1vcpu-1gb
 env:
   HARNESS_INFERENCE_MODEL: kimi-k3     # use the same model in both agents
 secrets:
-  HARNESS_INFERENCE_API_KEY: {}      # DigitalOcean creates and fills this in
+  HARNESS_INFERENCE_API_KEY: {}         # leave as {}: tells DigitalOcean to create the key and give it to the agent
 egress:
   allow_hosts:
     - pypi.org                       # the fence: no other direct internet
@@ -22,7 +23,7 @@ tools:
         - brightdata_web_search
 skills:
   - name: digitalocean-action-gateway
-    description: "Use when a request needs the web or another outside tool while running on DigitalOcean Harness Runtime: reading a page, searching for current information, or calling a tool through DigitalOcean's Action Gateway."
+    description: "Use for every request in a DigitalOcean Harness Runtime session, before any tool call: deciding whether a tool is needed, reading a page, searching for current information, or calling a tool through DigitalOcean's Action Gateway."
     instructions: |
       # Using tools through DigitalOcean's Action Gateway
 

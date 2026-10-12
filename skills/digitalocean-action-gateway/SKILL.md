@@ -1,6 +1,6 @@
 ---
 name: digitalocean-action-gateway
-description: "Use when a request needs the web or another outside tool while running on DigitalOcean Harness Runtime: reading a page, searching for current information, or calling a tool through DigitalOcean's Action Gateway."
+description: "Use for every request in a DigitalOcean Harness Runtime session, before any tool call: deciding whether a tool is needed, reading a page, searching for current information, or calling a tool through DigitalOcean's Action Gateway."
 ---
 
 # Using tools through DigitalOcean's Action Gateway

@@ -12,5 +12,5 @@
 "Our database cluster is gone from the console and the last backup won't restore. We are losing customer data.","{""queue"": ""tech_support"", ""urgency"": ""urgent""}"
 "I need to change the delivery address on order #88123 before it ships tomorrow, we moved offices.","{""queue"": ""shipping"", ""urgency"": ""normal""}"
 "Does your managed Postgres support pgvector? Thinking about moving our startup over next quarter.","{""queue"": ""sales"", ""urgency"": ""low""}"
-"My 2FA phone was stolen and I'm locked out of the account that runs all our customer sites. Sites are fine for now but I can't manage anything.","{""queue"": ""account_access"", ""urgency"": ""normal""}"
+"I got a new phone and didn't move my 2FA app, so now I'm locked out of the account that runs all our customer sites. Sites are fine for now but I can't manage anything.","{""queue"": ""account_access"", ""urgency"": ""normal""}"
 "Someone is using our card on file: there are 30 new Droplets in a region we never use and charges are climbing every hour.","{""queue"": ""account_access"", ""urgency"": ""urgent""}"

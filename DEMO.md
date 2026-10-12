@@ -98,10 +98,10 @@ Use slack_post_message exactly once to post a 3-story Hacker News digest to #<yo
 
 An eval runs the same requests through two candidates, and a judge model scores every answer, so "which is better?" gets a number instead of a feeling.
 
-**Live demo: open model vs. closed model** ([`evals/1-open-vs-closed`](evals/1-open-vs-closed/)):
+**Live demo: compare two models** ([`evals/1-open-vs-closed`](evals/1-open-vs-closed/)):
 
 1. In **Evaluations** > **Datasets**, upload [`ticket-triage.csv`](evals/1-open-vs-closed/ticket-triage.csv): 15 customer messages, each with the right queue and urgency.
-2. Run it on an open model (MiniMax M2.5), then on a closed one (Claude Sonnet 5.5, behind a one-model router), with the same triage prompt, judge and metric.
+2. Run it on MiniMax M2.5, then on OpenAI's open-weight GPT-oss-120b, with the same triage prompt, judge and metric. If your plan includes closed models, you can swap one in.
 3. Compare quality, cost and speed side by side, then read the judge's reasons on the misses.
 
 **Going further: does a skill make your agent better?** ([`evals/2-agent-skill`](evals/2-agent-skill/)): two Hermes agents, identical except for the [`digitalocean-action-gateway`](skills/digitalocean-action-gateway/SKILL.md) skill, scored on whether they call the right tool first. It's slower and costs more, because the agents really carry out each request.
