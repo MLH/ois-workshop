@@ -7,7 +7,7 @@ size: mars-1vcpu-1gb
 env:
   HARNESS_INFERENCE_MODEL: kimi-k3        # any open model from the list works
 secrets:
-  HARNESS_INFERENCE_API_KEY: {}         # leave as {}: tells DigitalOcean to create the key and give it to the agent
+  HARNESS_INFERENCE_API_KEY: {}         # the form creates the key; the console shows it as {}. To Import this file, put a model access key here (never commit it)
 egress:
   allow_hosts:
     - pypi.org                            # the fence: no other direct internet

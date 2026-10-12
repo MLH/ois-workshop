@@ -16,18 +16,11 @@
 
 ### 1. Create the two agents
 
-In **Harness Runtime**, click **Import environment.yaml** and paste `environment-without-skill.yaml`, then do the same with `environment-with-skill.yaml`. You get two agents, `agent-no-skill` and `agent-with-skill`, that are identical except for the `skills` block.
+First, create a model key the agents will use. Go to **Model Access Keys** (under Inference) → **Create model access key**, leave **All models** on, pick **No VPC network**, and copy the `doo_v1_…` value. It's shown only once.
 
-Keep these two blocks in both manifests exactly as they are:
+Then, in **Harness Runtime**, click **Import environment.yaml** and paste `environment-without-skill.yaml`. Replace `<your model access key>` with your key, and import. Do the same with `environment-with-skill.yaml`. You get two agents, `agent-no-skill` and `agent-with-skill`, that are identical except for the `skills` block.
 
-```yaml
-secrets:
-  HARNESS_INFERENCE_API_KEY: {}
-permissions:
-  default: allow
-```
-
-The empty `{}` tells DigitalOcean to create a model key and give it to the agent. Without it, the agent has no key, and every eval row fails with "All candidate model calls failed or returned empty output".
+Import needs a real key in `secrets`. With an empty value it refuses ("Secret … is declared but has no value"), and with no `secrets` block at all the agent has no key, so every eval row fails with "All candidate model calls failed or returned empty output". Keep the key out of screenshots, streams and git.
 
 If you build the agents with the **Create Environment** form instead, use the same settings (Hermes, `mars-1vcpu-1gb`, the same model in both, only **Bright Data (2)** tools, egress `pypi.org` only), then check each manifest against the YAML files here. Leave Slack and every other tool off: an eval really runs each request, so any tool you give it can really act.
 
@@ -77,7 +70,7 @@ Then open a fetch row and a no-tool row in each run, and compare the tool calls 
 
 ## If a run fails
 
-- **"All candidate model calls failed or returned empty output":** the agent can't reach its model. Check that its manifest has the `secrets` block above, then send "hi" in a session to confirm.
+- **"All candidate model calls failed or returned empty output":** the agent can't reach its model. Check that it was imported with a real key in `secrets`, then send "hi" in a session to confirm.
 
 - **"Only N of M rows produced a scoreable result":** too many rows timed out or errored. Re-run once; if it fails again, use a faster model in both agents.
 - **Every row is slow (minutes):** the agent is trying built-in web tools first. That's what the skill is meant to fix, so expect it in Run A.
