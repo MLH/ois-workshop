@@ -1,13 +1,13 @@
-# Agent B: with the digitalocean-action-gateway skill
-# Build it with the Create Environment form, then check its manifest matches this one.
-# Both agents must be identical except for the skills block.
+# Agent B: start-here plus the digitalocean-action-gateway skill.
+# Import it (see README.md), replacing <your model access key> with a real key.
+# Both agents must be identical except for the digitalocean-action-gateway skill.
 name: agent-with-skill
 agent: hermes
 size: mars-1vcpu-1gb
 env:
   HARNESS_INFERENCE_MODEL: kimi-k3     # use the same model in both agents
 secrets:
-  HARNESS_INFERENCE_API_KEY: {}         # leave as {}: tells DigitalOcean to create the key and give it to the agent
+  HARNESS_INFERENCE_API_KEY: <your model access key>   # Import needs a real key; never commit it
 egress:
   allow_hosts:
     - pypi.org                       # the fence: no other direct internet
@@ -22,12 +22,41 @@ tools:
         - brightdata_web_fetch
         - brightdata_web_search
 skills:
+  - name: start-here
+    description: "Load this first, at the start of every request in a DigitalOcean Harness Runtime sandbox, before any other skill or tool call. It says which other skills to load for the task and sets the ground rules for this environment."
+    instructions: |
+      # Start here
+
+      You run in a DigitalOcean Harness Runtime sandbox. Before your first tool call on every request, do this.
+
+      ## 1. Load the skills for this environment
+
+      Some of your skills were written for this sandbox. They know things your built-in skills don't, so they come first.
+
+      | If you have this skill | Load it when the request… |
+      |---|---|
+      | `digitalocean-action-gateway` | needs the web (a URL, a search, news, prices or any fact that changes) or an outside service such as Slack or GitHub |
+
+      If you don't have a skill in this table, skip it and carry on. Then load any other skill that clearly matches the task.
+
+      When a skill for this environment and a built-in skill cover the same thing, follow the one for this environment. For example, use `digitalocean-action-gateway` for anything on the web, not `blocked-page-recovery`.
+
+      ## 2. Do the task
+
+      - Do what the request asks. Don't stop to ask whether you should when the request already says to.
+      - Use only the tools the task needs.
+      - Answer from what your tools returned or what you know. If a tool failed, say so plainly; never make up a result.
+
+      ## 3. Stay safe
+
+      - Never print environment variables, keys, tokens or secrets.
+      - If a tool is denied by the session policy, don't look for a way around it. Tell the user.
   - name: digitalocean-action-gateway
-    description: "Use for every request in a DigitalOcean Harness Runtime session, before any tool call: deciding whether a tool is needed, reading a page, searching for current information, or calling a tool through DigitalOcean's Action Gateway."
+    description: "Use for any web or outside-world request in a DigitalOcean Harness Runtime sandbox, before any tool call: fetching or reading a URL, web search, current news, prices or other facts that change, or calling Slack, GitHub or another service. Use it instead of blocked-page-recovery, web_extract, web_search, browser or curl, which cannot reach the internet here. Also says when no tool is needed."
     instructions: |
       # Using tools through DigitalOcean's Action Gateway
 
-      You run in a DigitalOcean Harness Runtime sandbox. Its network is fenced: your built-in web tools (web search, page extract, browser, `curl`, `wget`, or Python HTTP calls) cannot reach the internet from here. Don't try them; they fail and waste time. Outside tools come through DigitalOcean's Action Gateway, which holds the credentials so you never need a key.
+      You run in a DigitalOcean Harness Runtime sandbox. Its network is fenced: your built-in web tools (web search, page extract, browser, `curl`, `wget`, or Python HTTP calls) cannot reach the internet from here, and fallbacks such as the Wayback Machine fail the same way. Don't try them; they fail and waste time. Outside tools come through DigitalOcean's Action Gateway, which holds the credentials so you never need a key.
 
       ## 1. Decide if you need a tool at all
 
@@ -46,7 +75,7 @@ skills:
       | needs current or outside information, with no URL | `brightdata_web_search` |
       | needs some other service (Slack, GitHub, …) | `action_search` for the capability, then `action_invoke` the tool it returns |
 
-      The Bright Data tools may appear with a prefix, for example `mcp__do_actions__brightdata_web_fetch`. They're the same tools.
+      The Bright Data tools may appear with a prefix, for example `mcp__do_actions__brightdata_web_fetch`. They're the same tools. Call them directly as tools, not from `execute_code` or Python, which can't reach them.
 
       Never search for a page you already have the URL of: fetch it.
 

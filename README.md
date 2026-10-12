@@ -83,6 +83,7 @@ The repo includes everything you need:
 |---|---|
 | [`DEMO.md`](DEMO.md) | The live demo, step by step |
 | [`environment.yaml`](environment.yaml) | A reference manifest for the agent |
+| [`skills/start-here/`](skills/start-here/SKILL.md) | A skill the agent loads first on every request. It points to the right skill for the task |
 | [`skills/digitalocean-action-gateway/`](skills/digitalocean-action-gateway/SKILL.md) | A sample skill: how an agent should use tools through DigitalOcean's Action Gateway |
 | [`evals/`](evals/) | Two evals: one model vs. another, and an agent with vs. without the skill |
 
