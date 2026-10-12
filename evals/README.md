@@ -18,10 +18,18 @@ The test requests are different from the examples inside the skill, so the eval 
 
 1. In the DigitalOcean console, go to **Evaluations** (under Inference) and open the **Datasets** tab. Click **Upload dataset**, choose `tool-pick.csv`, and click **Add**.
 2. Go back to **Runs** and click **New Evaluation**, then **Configure without a preset**.
-3. **Candidate:** set the type to **Serverless Inference** and pick an open model.
+3. **Candidate:** set the type to **Serverless Inference** and pick an open model, such as MiniMax M2.5.
+
+   Don't pick your Harness agent as the candidate. An agent actually carries out each request (fetching pages, trying to post to Slack) instead of naming the tool it would use first. That makes each row take minutes and cost far more, the judge can't score most answers, and the run fails.
 4. **System prompt:** paste all of `agent-prompt.txt`.
 5. **Dataset:** select `tool-pick.csv`.
-6. **Judge and metrics:** pick a judge model. A different model from the candidate is best. Select **Ground Truth Faithfulness** and make it the **Star Metric**.
+6. **Judge and metrics:** pick a judge model. A different model from the candidate is best. Under **Custom metrics**, click **Add metric** and create:
+   - Name: `Right tool`
+   - Description: `Did the agent pick the same first tool as the ground truth?`
+   - Scoring prompt: `The ground truth names the first tool the agent should call, or says none if no tool is needed. Score 1 if the output names the same tool (or says none when the ground truth says none), ignoring case, punctuation and extra words. Otherwise score 0.`
+   - Tick **Requires ground truth**, click **Create**, then make `Right tool` the **Star Metric**.
+
+   You only create the metric once; pick it from the list in later runs.
 7. Under **Optional settings**, name the run `without-skill`, then click **Run Evaluation**.
 8. Click **New Evaluation** again with the same model, dataset and judge. In **System prompt**, paste `agent-prompt.txt`, add a blank line, then paste the whole `SKILL.md`. Name the run `with-skill`.
 
@@ -51,10 +59,6 @@ Paste the whole `SKILL.md` under that message, then start a new chat and try one
 
 ## Optional upgrades
 
-- **A custom metric**, if Ground Truth Faithfulness gives partial scores. Under **Custom metrics**, click **Add metric**:
-  - Name: `Right tool`
-  - Description: `Did the agent pick the same first tool as the ground truth?`
-  - Scoring prompt: `Compare the tool name in the output with the ground truth. Score 1 if they name the same tool, ignoring case, punctuation and extra words. Otherwise score 0.`
-  - Tick **Requires ground truth**, and make `Right tool` the Star Metric with the pass threshold at the maximum score.
+- **Ground Truth Faithfulness instead of a custom metric:** it works, but it rewards matching the wording of the ground truth, so short one-word answers can score oddly.
 - **Test a router:** set the candidate type to **Model Router**, pick your router, and run the `with-skill` setup. Compare its score, cost and latency with the single model.
 - **Write your own skill:** copy `skills/pick-first-tool/`, rewrite the rules for a task from your own work, and replace the CSV rows with real requests and their right answers.
