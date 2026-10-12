@@ -1,6 +1,7 @@
 # Reference manifest for the workshop agent.
 # Build it with the Create Environment form (see README.md), then compare the
 # manifest DigitalOcean shows you with this one. Never put a real key in this file.
+name: my-agent
 agent: hermes
 size: mars-1vcpu-1gb
 env:

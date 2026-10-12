@@ -1,6 +1,7 @@
 # Agent A: no skill
 # Build it with the Create Environment form, then check its manifest matches this one.
 # Both agents must be identical except for the skills block.
+name: agent-no-skill
 agent: hermes
 size: mars-1vcpu-1gb
 env:
