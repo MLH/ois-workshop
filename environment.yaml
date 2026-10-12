@@ -5,8 +5,6 @@ agent: hermes
 size: mars-1vcpu-1gb
 env:
   HARNESS_INFERENCE_MODEL: kimi-k3        # any open model from the list works
-secrets:
-  HARNESS_INFERENCE_API_KEY: {}           # DigitalOcean creates and fills this in
 egress:
   allow_hosts:
     - pypi.org                            # the fence: no other direct internet
