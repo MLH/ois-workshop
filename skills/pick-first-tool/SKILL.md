@@ -1,13 +1,6 @@
 ---
 name: pick-first-tool
-description: Decide which tool to call first for a request - search the web, read one page, post to Slack, or no tool at all. Use before any web or Slack action, and whenever a request mentions a URL, current information, or sharing something with the team.
-version: 1.0.0
-author: OIS Workshop Day
-license: MIT
-metadata:
-  hermes:
-    tags: [tools, web, slack, workshop]
-    related_skills: []
+description: "Decide which tool to call first for a request: search the web, read one page, post to Slack, or use no tool. Use before any web or Slack action, and whenever a request mentions a URL, current information, or sharing something with the team."
 ---
 
 # Pick the first tool
