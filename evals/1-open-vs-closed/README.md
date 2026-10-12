@@ -1,6 +1,6 @@
-# Eval 1: open model vs. closed model
+# Eval 1: compare two models
 
-**The question:** on a real everyday task, how does a cheap open-weight model compare with a frontier closed model, on quality, cost and speed?
+**The question:** on a real everyday task, how do two models compare on quality, cost and speed? The live demo compares two open-weight models, OpenAI's GPT-oss-120b and MiniMax M2.5. If your plan includes closed models, swap one of them for a closed model (see the optional section below).
 
 **The task:** support-ticket triage. Each row is one customer message. The model must pick one of six queues and an urgency, then reply with JSON like `{"queue": "billing", "urgency": "normal"}`. There are 15 messages, each with the right answer.
 
@@ -17,9 +17,11 @@
 
 In the DigitalOcean console, go to **Evaluations** (under Inference) → **Datasets** → **Upload dataset**, choose `ticket-triage.csv`, and click **Add**.
 
-### 2. Make the closed model available to Evaluations
+### 2. (Optional) Add a closed model
 
-Evaluations lists open models under **Serverless Inference**. Closed models such as Anthropic Claude and OpenAI GPT appear in the Model Catalog, but not in that list. To evaluate one, put it behind a router that only ever uses that model:
+Closed models such as Anthropic Claude and OpenAI GPT-6 depend on your plan. On some plans they fail with "This model is not available on your current tier", and Anthropic models also ask you to accept Anthropic's terms first. Skip this step unless you've confirmed your account can call one (try it in **Inference Router** → **Playground**).
+
+Evaluations doesn't list closed models under **Serverless Inference**, so put the closed model behind a router that only ever uses it:
 
 1. Go to **Inference Router** → **Create Router**.
 2. Fill in the form. A router needs a description and at least one task, so give it a single task that matches everything, with only the closed model:
@@ -49,24 +51,26 @@ You only create the metric once. Later runs pick it from the list.
 
 Start two evaluations with the **same dataset, judge, metric and system prompt**. Only the candidate changes.
 
-| | Run A: open | Run B: closed |
+| | Run A | Run B |
 |---|---|---|
-| **Candidate type** | Serverless Inference | Model Router |
-| **Candidate** | MiniMax M2.5 (or DeepSeek V4 Flash) | `closed-claude-sonnet` |
+| **Candidate type** | Serverless Inference | Serverless Inference (or Model Router for a closed model) |
+| **Candidate** | MiniMax M2.5 | OpenAI GPT-oss-120b (or `closed-claude-sonnet`) |
 | **System prompt** | all of `system-prompt.txt` | all of `system-prompt.txt` |
 | **Dataset** | `ticket-triage.csv` | `ticket-triage.csv` |
-| **Judge** | Deepseek V4 Pro | Deepseek V4 Pro |
+| **Judge** | Kimi K3 | Kimi K3 |
 | **Star metric** | `Exact match` | `Exact match` |
-| **Run name** | `open-minimax` | `closed-sonnet` |
+| **Run name** | `minimax` | `gpt-oss-120b` |
 
 ## Read the results
 
 Open both runs side by side (or use **Compare Evaluation**) and look at three things:
 
 1. **Quality:** the **Overall Score**. How many of the 15 did each get right?
-2. **Cost:** the **Candidate Tokens**, multiplied by each model's price in the Model Catalog. For example, MiniMax M2.5 is $0.30 / $1.20 per million input / output tokens, and Claude Sonnet 5.5 is $2.00 / $10.00.
+2. **Cost:** the **Candidate Tokens**, multiplied by each model's price in the Model Catalog. For example, MiniMax M2.5 is $0.30 / $1.20 per million input / output tokens, and GPT-oss-120b is $0.10 / $0.70.
+
+In our test run, GPT-oss-120b got 14 of 15 right, and MiniMax M2.5 got 13. Each run took under 40 seconds, and the whole dataset cost less than a cent on either model.
 3. **Speed:** the **Candidate Latency**.
 
 Then open the rows either model got wrong and read the judge's **Reason**. The interesting rows are usually the judgment calls: a hacked account (urgent), or a refund caused by a billing error (refunds, not billing).
 
-If the open model is close on quality at a fraction of the cost, it's a good default, and a router can send only the hard cases to the closed model. If it isn't close, you've learned where the closed model earns its price.
+If the cheaper model is as good on your task, it's a good default, and a router can send only the hard cases to a pricier model. If it isn't, you've learned where the pricier model earns its keep.

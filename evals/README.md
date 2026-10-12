@@ -6,7 +6,7 @@ This folder has two:
 
 | Eval | Compares | Candidate | Time | Cost |
 |---|---|---|---|---|
-| [1 · Open vs. closed model](1-open-vs-closed/) | A cheap open-weight model and a frontier closed model on support-ticket triage | Models | Minutes | Cents |
+| [1 · Compare two models](1-open-vs-closed/) | Two models (open, or closed if your plan allows) on support-ticket triage | Models | Minutes | Cents |
 | [2 · Agent with vs. without a skill](2-agent-skill/) | Two Hermes agents, identical except for one skill, on tool calls | Agents | 15–30 min per run | Dollars |
 
 Start with eval 1. It's fast, and it shows the whole Evaluations flow: dataset, candidate, judge, metric, results. Eval 2 uses the same flow on real agents.
