@@ -1,0 +1,22 @@
+# Agent A: no skill
+# Build it with the Create Environment form, then check its manifest matches this one.
+# Both agents must be identical except for the skills block.
+agent: hermes
+size: mars-1vcpu-1gb
+env:
+  HARNESS_INFERENCE_MODEL: kimi-k3     # use the same model in both agents
+secrets:
+  HARNESS_INFERENCE_API_KEY: {}      # DigitalOcean creates and fills this in
+egress:
+  allow_hosts:
+    - pypi.org                       # the fence: no other direct internet
+permissions:
+  default: allow
+tools:
+  - do.actions:
+      tools:
+        - brightdata_web_fetch
+        - brightdata_web_search
+      preload_tools:
+        - brightdata_web_fetch
+        - brightdata_web_search
