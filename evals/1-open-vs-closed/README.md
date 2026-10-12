@@ -21,10 +21,18 @@ In the DigitalOcean console, go to **Evaluations** (under Inference) → **Datas
 
 Evaluations lists open models under **Serverless Inference**. Closed models such as Anthropic Claude and OpenAI GPT appear in the Model Catalog, but not in that list. To evaluate one, put it behind a router that only ever uses that model:
 
-1. Go to **Inference Router** → **Create Router**. Name it `closed-claude-sonnet`.
-2. Add no tasks. Click **Add Fallback Models**, select **Anthropic Claude Sonnet 5.5** (or another closed model), click **Save**, then **Create Router**.
+1. Go to **Inference Router** → **Create Router**.
+2. Fill in the form. A router needs a description and at least one task, so give it a single task that matches everything, with only the closed model:
+   - **Name:** `closed-claude-sonnet`
+   - **Description:** `Send every request to Claude Sonnet 5.5. Used to evaluate a closed model.`
+   - **Add tasks** → **Add Custom Task:**
+     - Name: `everything`
+     - Description: `Every request of any kind: questions, classification, writing, code, support tickets and anything else.`
+     - Models: **Anthropic Claude Sonnet 5.5** only
+   - **Add Fallback Models:** **Anthropic Claude Sonnet 5.5** again, so any request that doesn't match still goes to the same model.
+3. Click **Create Router**.
 
-With no tasks, every request goes to the fallback, so the router is that one model. If the form insists on a task, add one custom task named `everything`, described as "Every request", with only that model.
+Whatever the router decides, every request lands on Claude Sonnet 5.5, so evaluating the router evaluates that model.
 
 ### 3. Create the scoring metric
 
