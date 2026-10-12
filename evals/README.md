@@ -8,7 +8,7 @@ You run the same 20 requests through the same model twice, once without the skil
 
 | File | What it is |
 |---|---|
-| `tool-pick.csv` | 20 requests (`input`) and the right first tool for each (`expected_response`) |
+| `tool-pick.csv` | 20 requests (`input`) and the right first tool for each (`ground_truth`) |
 | `agent-prompt.txt` | The agent's base instructions: the three tool names and one-line descriptions, nothing more |
 | `../skills/pick-first-tool/SKILL.md` | The skill under test |
 
@@ -53,8 +53,8 @@ Paste the whole `SKILL.md` under that message, then start a new chat and try one
 
 - **A custom metric**, if Ground Truth Faithfulness gives partial scores. Under **Custom metrics**, click **Add metric**:
   - Name: `Right tool`
-  - Description: `Did the agent pick the same first tool as the expected response?`
-  - Scoring prompt: `Compare the tool name in the output with the expected response. Score 1 if they name the same tool, ignoring case, punctuation and extra words. Otherwise score 0.`
+  - Description: `Did the agent pick the same first tool as the ground truth?`
+  - Scoring prompt: `Compare the tool name in the output with the ground truth. Score 1 if they name the same tool, ignoring case, punctuation and extra words. Otherwise score 0.`
   - Tick **Requires ground truth**, and make `Right tool` the Star Metric with the pass threshold at the maximum score.
 - **Test a router:** set the candidate type to **Model Router**, pick your router, and run the `with-skill` setup. Compare its score, cost and latency with the single model.
 - **Write your own skill:** copy `skills/pick-first-tool/`, rewrite the rules for a task from your own work, and replace the CSV rows with real requests and their right answers.
