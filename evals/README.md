@@ -1,60 +1,20 @@
-# Eval kit: does a skill make the agent pick the right tool?
+# Evals
 
-A **skill** is a folder with a `SKILL.md` file: a name, a one-line description of when to use it, and instructions. Agents like Hermes load a skill when a request matches its description, so you can teach an agent your team's way of doing something once and reuse it.
+An eval runs the same set of requests through a candidate (a model, a router or an agent), and a judge model scores every answer against the right one. It replaces "it seemed better" with a number you can compare.
 
-This kit tests the skill in [`../skills/pick-first-tool/SKILL.md`](../skills/pick-first-tool/SKILL.md). The skill teaches the agent which tool to call first: search the web, read one page, post to Slack, or no tool at all.
+This folder has two:
 
-You run the same 20 requests through the same model twice, once without the skill and once with it, and a judge model scores every answer.
+| Eval | Compares | Candidate | Time | Cost |
+|---|---|---|---|---|
+| [1 · Open vs. closed model](1-open-vs-closed/) | A cheap open-weight model and a frontier closed model on support-ticket triage | Models | Minutes | Cents |
+| [2 · Agent with vs. without a skill](2-agent-skill/) | Two Hermes agents, identical except for one skill, on tool calls | Agents | 15–30 min per run | Dollars |
 
-| File | What it is |
-|---|---|
-| `tool-pick.csv` | 20 requests (`input`) and the right first tool for each (`ground_truth`) |
-| `agent-prompt.txt` | The agent's base instructions: the three tool names and one-line descriptions, nothing more |
-| `../skills/pick-first-tool/SKILL.md` | The skill under test |
+Start with eval 1. It's fast, and it shows the whole Evaluations flow: dataset, candidate, judge, metric, results. Eval 2 uses the same flow on real agents.
 
-The test requests are different from the examples inside the skill, so the eval measures whether the rules carry over to new requests, not whether the model can copy an example.
+## How to build your own
 
-## Run it (about 10 minutes)
-
-1. In the DigitalOcean console, go to **Evaluations** (under Inference) and open the **Datasets** tab. Click **Upload dataset**, choose `tool-pick.csv`, and click **Add**.
-2. Go back to **Runs** and click **New Evaluation**, then **Configure without a preset**.
-3. **Candidate:** set the type to **Serverless Inference** and pick an open model.
-4. **System prompt:** paste all of `agent-prompt.txt`.
-5. **Dataset:** select `tool-pick.csv`.
-6. **Judge and metrics:** pick a judge model. A different model from the candidate is best. Select **Ground Truth Faithfulness** and make it the **Star Metric**.
-7. Under **Optional settings**, name the run `without-skill`, then click **Run Evaluation**.
-8. Click **New Evaluation** again with the same model, dataset and judge. In **System prompt**, paste `agent-prompt.txt`, add a blank line, then paste the whole `SKILL.md`. Name the run `with-skill`.
-
-   Why paste it? When an agent loads a skill, the skill's text goes into the model's context next to its instructions. Pasting it in does the same thing, so the eval tests the exact words your agent would see.
-
-9. When both runs show **Completed**, open each one. Compare the **Overall Score**, and read the **Reason** column on the rows the first run got wrong.
-
-## What to look for
-
-Without the skill, the model knows the tool names but not your rules, so it tends to miss these:
-
-- **"Rewrite this…" with a URL inside:** it fetches the URL. The skill says it's the user's own text, so no tool is needed.
-- **"Find X and share it in Slack":** it goes straight to Slack. The skill says to get the information first.
-- **"Who won the most recent Super Bowl?":** it answers from memory. The skill says to search for anything after 2024.
-
-Your numbers will vary by model. The point is to measure the change instead of guessing at it.
-
-## Give your agent the skill
-
-Hermes keeps skills in `~/.hermes/skills/<name>/SKILL.md`. In your agent's session, send:
-
-```
-Create the file ~/.hermes/skills/pick-first-tool/SKILL.md with exactly the content below, then list your skills to confirm it loaded.
-```
-
-Paste the whole `SKILL.md` under that message, then start a new chat and try one of the requests from `tool-pick.csv`.
-
-## Optional upgrades
-
-- **A custom metric**, if Ground Truth Faithfulness gives partial scores. Under **Custom metrics**, click **Add metric**:
-  - Name: `Right tool`
-  - Description: `Did the agent pick the same first tool as the ground truth?`
-  - Scoring prompt: `Compare the tool name in the output with the ground truth. Score 1 if they name the same tool, ignoring case, punctuation and extra words. Otherwise score 0.`
-  - Tick **Requires ground truth**, and make `Right tool` the Star Metric with the pass threshold at the maximum score.
-- **Test a router:** set the candidate type to **Model Router**, pick your router, and run the `with-skill` setup. Compare its score, cost and latency with the single model.
-- **Write your own skill:** copy `skills/pick-first-tool/`, rewrite the rules for a task from your own work, and replace the CSV rows with real requests and their right answers.
+1. **Pick one question,** such as "Is the cheap model good enough?" or "Does this skill help?"
+2. **Write 15–50 rows** in a CSV with two columns: `input` (the request) and `ground_truth` (the right answer, or the right behavior).
+3. **Hold everything else equal** between the runs you compare: same dataset, judge, metric and prompt. Change only the thing you're testing.
+4. **Write a custom metric** that scores exactly what you care about. The built-in metrics are general-purpose and can score short or structured answers oddly.
+5. **Read the judge's reasons** on the rows that failed. That's where you learn what to change.

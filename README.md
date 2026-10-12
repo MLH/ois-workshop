@@ -74,7 +74,7 @@ Follow **[DEMO.md](DEMO.md)** to build the agent from the live demo in six steps
 2. Describe your agent in one file
 3. Give it hands, then fence it
 4. Post to Slack *(optional)*
-5. Prove a skill works with an eval
+5. Prove it with an eval
 6. Let a router pick the model
 
 The repo includes everything you need:
@@ -83,8 +83,8 @@ The repo includes everything you need:
 |---|---|
 | [`DEMO.md`](DEMO.md) | The live demo, step by step |
 | [`environment.yaml`](environment.yaml) | A reference manifest for the agent |
-| [`skills/pick-first-tool/`](skills/pick-first-tool/SKILL.md) | A sample skill: which tool to call first |
-| [`evals/`](evals/) | A 20-row dataset and steps to test the skill with an eval |
+| [`skills/digitalocean-action-gateway/`](skills/digitalocean-action-gateway/SKILL.md) | A sample skill: how an agent should use tools through DigitalOcean's Action Gateway |
+| [`evals/`](evals/) | Two evals: an open vs. a closed model, and an agent with vs. without the skill |
 
 ---
 
