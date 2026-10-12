@@ -6,7 +6,7 @@
 
 | File | What it is |
 |---|---|
-| `agent-tasks.csv` | 16 requests (`input`) and the expected behavior for each (`ground_truth`): fetch, search, or no tool. Each request starts with the same nudge: "Before you start, check your skills and load any that apply." |
+| `agent-tasks.csv` | 16 requests (`input`) and the expected behavior for each (`ground_truth`): fetch, search, or no tool. Each request starts with the same nudge: "First, load the digitalocean-action-gateway skill if you have it." |
 | `environment-without-skill.yaml` | Agent A's manifest |
 | `environment-with-skill.yaml` | Agent B's manifest: the same, plus the skill |
 
@@ -56,7 +56,7 @@ Start two evaluations. Only the candidate changes.
 
 Leave the system prompt empty.
 
-**Why every request starts with "check your skills":** agents don't reliably load a skill on their own, even when its description matches. Without a nudge, the eval mostly measures whether the agent noticed the skill, not whether the skill helps. Both agents get exactly the same nudge, so it stays a fair test: Agent A has no skill to find, and Agent B loads `digitalocean-action-gateway`. The `Right tool first` metric ignores the skill lookup itself.
+**Why every request names the skill:** agents don't reliably load a skill on their own, even when its description matches. A vague nudge isn't enough either: told to "check your skills and load any that apply", Hermes picked its built-in `blocked-page-recovery` skill and tried `curl`, a browser and the Wayback Machine before giving up. Without naming the skill, the eval mostly measures whether the agent noticed it, not whether it helps. Both agents get exactly the same nudge, so it stays a fair test: Agent A has no such skill and carries on, and Agent B loads it. The `Right tool first` metric ignores the skill lookup itself.
 
 ## Read the results
 
