@@ -8,7 +8,7 @@ You run the same 20 requests through the same model twice, once without the skil
 
 | File | What it is |
 |---|---|
-| `tool-pick.csv` | 20 requests (`query`) and the right first tool for each (`expected_response`) |
+| `tool-pick.csv` | 20 requests (`input`) and the right first tool for each (`expected_response`) |
 | `agent-prompt.txt` | The agent's base instructions: the three tool names and one-line descriptions, nothing more |
 | `../skills/pick-first-tool/SKILL.md` | The skill under test |
 

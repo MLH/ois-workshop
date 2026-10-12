@@ -1,4 +1,4 @@
-"query","expected_response"
+"input","expected_response"
 "What are the top stories on https://news.ycombinator.com right now?","brightdata_web_fetch"
 "What's the latest model release from MiniMax?","brightdata_web_search"
 "Post 'Lunch is here' in #general.","slack_post_message"
