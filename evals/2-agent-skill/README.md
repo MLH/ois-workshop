@@ -4,11 +4,11 @@
 
 **What the skill fixes:** in our test runs without it, the agent tried its built-in web tools first (web extract, browser, `curl`, Python), and they all failed at the sandbox fence. Only then did it reach the Bright Data tools in DigitalOcean's Action Gateway. Rows took 30 seconds to 3.5 minutes, and sometimes the agent answered from memory after every fetch failed. The [`digitalocean-action-gateway`](../../skills/digitalocean-action-gateway/SKILL.md) skill tells it to go straight to the right tool, or use none.
 
-**How the agent finds the skill:** both agents also have a small [`start-here`](../../skills/start-here/SKILL.md) skill, and every request tells the agent to load it first. `start-here` lists the skills written for this environment, says when to load each one, and says they win over built-in skills. It's the one skill you always name; it routes to the rest.
+**How the agent finds the skill:** both agents also have a small [`start-here`](../../skills/start-here/SKILL.md) skill. Its description tells the agent to load it first on every request, and every request asks the agent to check its skills. `start-here` lists the skills written for this environment, says when to load each one, and says they win over built-in skills. It's the entry point; it routes to the rest.
 
 | File | What it is |
 |---|---|
-| `agent-tasks.csv` | 16 requests (`input`) and the expected behavior for each (`ground_truth`): fetch, search, or no tool. Each request starts with the same nudge: "First, load your start-here skill." |
+| `agent-tasks.csv` | 16 requests (`input`) and the expected behavior for each (`ground_truth`): fetch, search, or no tool. Each request starts with the same nudge: "Before you start, check your skills and load any that apply." |
 | `environment-without-skill.yaml` | Agent A's manifest, with only `start-here` |
 | `environment-with-skill.yaml` | Agent B's manifest: the same, plus `digitalocean-action-gateway` |
 
@@ -58,7 +58,7 @@ Start two evaluations. Only the candidate changes.
 
 Leave the system prompt empty.
 
-**Why every request says "load your start-here skill":** agents don't reliably load a skill on their own, even when its description matches. A vague nudge isn't enough either: told to "check your skills and load any that apply", Hermes picked its built-in `blocked-page-recovery` skill and tried `curl`, a browser and the Wayback Machine before giving up. Naming one fixed skill in every request is reliable, and `start-here` then points the agent at the right skill for the task. Both agents get the same nudge and the same `start-here`, so the only difference is `digitalocean-action-gateway`: Agent A finds it isn't installed and carries on, and Agent B loads it. The `Right tool first` metric ignores skill lookups.
+**Why every request starts with "check your skills":** agents don't reliably load a skill on their own, even when its description matches. Without a nudge, the eval mostly measures whether the agent noticed the skill, not whether the skill helps. A nudge alone isn't enough either: with only `digitalocean-action-gateway` installed, "check your skills" made Hermes pick its built-in `blocked-page-recovery` skill and try `curl`, a browser and the Wayback Machine before giving up. With `start-here` added, the same nudge made it load `start-here`, then `digitalocean-action-gateway`, then call `brightdata_web_fetch` first. Both agents get the same nudge and the same `start-here`, so the only difference is `digitalocean-action-gateway`: Agent A finds it isn't installed and carries on, and Agent B loads it. The `Right tool first` metric ignores skill lookups.
 
 ## Read the results
 
